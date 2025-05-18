@@ -79,10 +79,11 @@ class StoryItem {
             bottom: Radius.circular(roundedBottom ? 8 : 0),
           ),
         ),
-        padding: textOuterPadding?? EdgeInsets.symmetric(
-          horizontal: 24,
-          vertical: 16,
-        ),
+        padding: textOuterPadding ??
+            EdgeInsets.symmetric(
+              horizontal: 24,
+              vertical: 16,
+            ),
         child: Center(
           child: Text(
             title,
@@ -140,12 +141,13 @@ class StoryItem {
                   margin: EdgeInsets.only(
                     bottom: 24,
                   ),
-                  padding: captionOuterPadding?? EdgeInsets.symmetric(
-                    horizontal: 24,
-                    vertical: 8,
-                  ),
+                  padding: captionOuterPadding ??
+                      EdgeInsets.symmetric(
+                        horizontal: 24,
+                        vertical: 8,
+                      ),
                   color: caption != null ? Colors.black54 : Colors.transparent,
-                  child: caption?? const SizedBox.shrink(),
+                  child: caption ?? const SizedBox.shrink(),
                 ),
               ),
             )
@@ -193,11 +195,12 @@ class StoryItem {
                 ),
                 Container(
                   margin: EdgeInsets.only(bottom: 16),
-                  padding: captionOuterPadding?? EdgeInsets.symmetric(horizontal: 24, vertical: 8),
+                  padding: captionOuterPadding ??
+                      EdgeInsets.symmetric(horizontal: 24, vertical: 8),
                   child: Align(
                     alignment: Alignment.bottomLeft,
                     child: Container(
-                      child: caption?? const SizedBox.shrink(),
+                      child: caption ?? const SizedBox.shrink(),
                       width: double.infinity,
                     ),
                   ),
@@ -252,7 +255,7 @@ class StoryItem {
                     padding: EdgeInsets.symmetric(horizontal: 24, vertical: 8),
                     color:
                         caption != null ? Colors.black54 : Colors.transparent,
-                    child: caption?? const SizedBox.shrink(),
+                    child: caption ?? const SizedBox.shrink(),
                   ),
                 ),
               )
@@ -377,6 +380,8 @@ class StoryView extends StatefulWidget {
   /// The pages to displayed.
   final List<StoryItem?> storyItems;
 
+  final TextDirection? indicatorDirection;
+
   /// Callback for when a full cycle of story is shown. This will be called
   /// each time the full story completes when [repeat] is set to `true`.
   final VoidCallback? onComplete;
@@ -406,6 +411,7 @@ class StoryView extends StatefulWidget {
 
   /// Indicator Color
   final Color? indicatorColor;
+
   /// Indicator Foreground Color
   final Color? indicatorForegroundColor;
 
@@ -425,9 +431,13 @@ class StoryView extends StatefulWidget {
     this.inline = false,
     this.onVerticalSwipeComplete,
     this.indicatorColor,
+    this.indicatorDirection,
     this.indicatorForegroundColor,
     this.indicatorHeight = IndicatorHeight.large,
-    this.indicatorOuterPadding = const EdgeInsets.symmetric(horizontal: 16, vertical: 8,),
+    this.indicatorOuterPadding = const EdgeInsets.symmetric(
+      horizontal: 16,
+      vertical: 8,
+    ),
   });
 
   @override
@@ -654,6 +664,7 @@ class StoryViewState extends State<StoryView> with TickerProviderStateMixin {
                     indicatorHeight: widget.indicatorHeight,
                     indicatorColor: widget.indicatorColor,
                     indicatorForegroundColor: widget.indicatorForegroundColor,
+                    indicatorDirection: widget.indicatorDirection,
                   ),
                 ),
               ),
@@ -674,7 +685,11 @@ class StoryViewState extends State<StoryView> with TickerProviderStateMixin {
                   if (_nextDebouncer?.isActive == false) {
                     widget.controller.play();
                   } else {
-                    widget.controller.next();
+                    if (widget.indicatorDirection == TextDirection.rtl) {
+                      widget.controller.previous();
+                    } else {
+                      widget.controller.next();
+                    }
                   }
                 },
                 onVerticalDragStart: widget.onVerticalSwipeComplete == null
@@ -717,7 +732,12 @@ class StoryViewState extends State<StoryView> with TickerProviderStateMixin {
             heightFactor: 1,
             child: SizedBox(
                 child: GestureDetector(onTap: () {
-                  widget.controller.previous();
+                  if (widget.indicatorDirection == TextDirection.rtl) {
+                    widget.controller.next();
+                  } else {
+                    widget.controller.previous();
+                  }
+                  // widget.controller.previous();
                 }),
                 width: 70),
           ),
@@ -744,6 +764,7 @@ class PageBar extends StatefulWidget {
   final IndicatorHeight indicatorHeight;
   final Color? indicatorColor;
   final Color? indicatorForegroundColor;
+  final TextDirection? indicatorDirection;
 
   PageBar(
     this.pages,
@@ -751,6 +772,7 @@ class PageBar extends StatefulWidget {
     this.indicatorHeight = IndicatorHeight.large,
     this.indicatorColor,
     this.indicatorForegroundColor,
+    this.indicatorDirection,
     Key? key,
   }) : super(key: key);
 
@@ -788,7 +810,11 @@ class PageBarState extends State<PageBar> {
 
   @override
   Widget build(BuildContext context) {
+    final textDirection =
+        widget.indicatorDirection ?? Directionality.of(context);
+
     return Row(
+      textDirection: textDirection,
       children: widget.pages.map((it) {
         return Expanded(
           child: Container(
@@ -796,10 +822,14 @@ class PageBarState extends State<PageBar> {
                 right: widget.pages.last == it ? 0 : this.spacing),
             child: StoryProgressIndicator(
               isPlaying(it) ? widget.animation!.value : (it.shown ? 1 : 0),
-              indicatorHeight:
-                  widget.indicatorHeight == IndicatorHeight.large ? 5 : widget.indicatorHeight == IndicatorHeight.medium ? 3 : 2,
+              indicatorHeight: widget.indicatorHeight == IndicatorHeight.large
+                  ? 5
+                  : widget.indicatorHeight == IndicatorHeight.medium
+                      ? 3
+                      : 2,
               indicatorColor: widget.indicatorColor,
               indicatorForegroundColor: widget.indicatorForegroundColor,
+              textDirection: textDirection,
             ),
           ),
         );
@@ -816,12 +846,14 @@ class StoryProgressIndicator extends StatelessWidget {
   final double indicatorHeight;
   final Color? indicatorColor;
   final Color? indicatorForegroundColor;
+  final TextDirection textDirection;
 
   StoryProgressIndicator(
     this.value, {
     this.indicatorHeight = 5,
     this.indicatorColor,
     this.indicatorForegroundColor,
+    required this.textDirection,
   });
 
   @override
@@ -831,12 +863,14 @@ class StoryProgressIndicator extends StatelessWidget {
         this.indicatorHeight,
       ),
       foregroundPainter: IndicatorOval(
-        this.indicatorForegroundColor?? Colors.white.withOpacity(0.8),
+        this.indicatorForegroundColor ?? Colors.white.withOpacity(0.8),
         this.value,
+        textDirection: textDirection,
       ),
       painter: IndicatorOval(
-        this.indicatorColor?? Colors.white.withOpacity(0.4),
+        this.indicatorColor ?? Colors.white.withOpacity(0.4),
         1.0,
+        textDirection: textDirection,
       ),
     );
   }
@@ -845,17 +879,27 @@ class StoryProgressIndicator extends StatelessWidget {
 class IndicatorOval extends CustomPainter {
   final Color color;
   final double widthFactor;
+  final TextDirection textDirection;
 
-  IndicatorOval(this.color, this.widthFactor);
+  IndicatorOval(this.color, this.widthFactor, {required this.textDirection});
 
   @override
   void paint(Canvas canvas, Size size) {
     final paint = Paint()..color = this.color;
+    double startX = 0;
+    double endX = size.width * widthFactor;
+    if (textDirection == TextDirection.rtl) {
+      startX = size.width - endX;
+      endX = size.width;
+    }
+
     canvas.drawRRect(
-        RRect.fromRectAndRadius(
-            Rect.fromLTWH(0, 0, size.width * this.widthFactor, size.height),
-            Radius.circular(3)),
-        paint);
+      RRect.fromRectAndRadius(
+        Rect.fromLTRB(startX, 0, endX, size.height),
+        Radius.circular(3),
+      ),
+      paint,
+    );
   }
 
   @override
