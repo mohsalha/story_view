@@ -41,13 +41,12 @@ class StoryItem {
   /// Border radius for the story item
   final BorderRadiusGeometry? borderRadius;
 
-  StoryItem(
-      this.view, {
-        required this.duration,
-        this.shown = false,
-        this.margin,
-        this.borderRadius,
-      });
+  StoryItem(this.view, {
+    required this.duration,
+    this.shown = false,
+    this.margin,
+    this.borderRadius,
+  });
 
   /// Short hand to create text-only page.
   ///
@@ -139,13 +138,14 @@ class StoryItem {
         key: key,
         margin: margin ?? EdgeInsets.all(8),
         decoration: BoxDecoration(
+          color: Colors.black,
           borderRadius: borderRadius ?? BorderRadius.circular(8),
         ),
-        child: ClipRRect(
-          borderRadius: borderRadius ?? BorderRadius.circular(8),
-          child: Stack(
-            children: <Widget>[
-              StoryImage.url(
+        child: Stack(
+          children: <Widget>[
+            ClipRRect(
+              borderRadius: borderRadius ?? BorderRadius.circular(0),
+              child: StoryImage.url(
                 url,
                 controller: controller,
                 fit: imageFit,
@@ -153,26 +153,27 @@ class StoryItem {
                 loadingWidget: loadingWidget,
                 errorWidget: errorWidget,
               ),
-              SafeArea(
-                child: Align(
-                  alignment: Alignment.bottomCenter,
-                  child: Container(
-                    width: double.infinity,
-                    margin: EdgeInsets.only(
-                      bottom: 24,
-                    ),
-                    padding: captionOuterPadding ??
-                        EdgeInsets.symmetric(
-                          horizontal: 24,
-                          vertical: 8,
-                        ),
-                    color: caption != null ? Colors.black54 : Colors.transparent,
-                    child: caption ?? const SizedBox.shrink(),
+            ),
+            SafeArea(
+              child: Align(
+                alignment: Alignment.bottomCenter,
+                child: Container(
+                  width: double.infinity,
+                  margin: EdgeInsets.only(
+                    bottom: 24,
                   ),
+                  padding: captionOuterPadding ??
+                      EdgeInsets.symmetric(
+                        horizontal: 24,
+                        vertical: 8,
+                      ),
+                  color: caption != null ? Colors.black54 : Colors
+                      .transparent,
+                  child: caption ?? const SizedBox.shrink(),
                 ),
-              )
-            ],
-          ),
+              ),
+            )
+          ],
         ),
       ),
       shown: shown,
@@ -251,20 +252,19 @@ class StoryItem {
 
   /// Shorthand for creating page video. [controller] should be same instance as
   /// one passed to the `StoryView`
-  factory StoryItem.pageVideo(
-      String url, {
-        required StoryController controller,
-        Key? key,
-        Duration? duration,
-        BoxFit imageFit = BoxFit.fitWidth,
-        Widget? caption,
-        bool shown = false,
-        Map<String, dynamic>? requestHeaders,
-        Widget? loadingWidget,
-        Widget? errorWidget,
-        EdgeInsetsGeometry? margin,
-        BorderRadiusGeometry? borderRadius,
-      }) {
+  factory StoryItem.pageVideo(String url, {
+    required StoryController controller,
+    Key? key,
+    Duration? duration,
+    BoxFit imageFit = BoxFit.fitWidth,
+    Widget? caption,
+    bool shown = false,
+    Map<String, dynamic>? requestHeaders,
+    Widget? loadingWidget,
+    Widget? errorWidget,
+    EdgeInsetsGeometry? margin,
+    BorderRadiusGeometry? borderRadius,
+  }) {
     return StoryItem(
       Container(
         key: key,
@@ -272,33 +272,35 @@ class StoryItem {
         decoration: BoxDecoration(
           borderRadius: borderRadius ?? BorderRadius.circular(8),
         ),
-        child: ClipRRect(
-          borderRadius: borderRadius ?? BorderRadius.circular(8),
-          child: Container(
-            color: Colors.black,
-            child: Stack(
-              children: <Widget>[
-                StoryVideo.url(
+        child: Container(
+          color: Colors.black,
+          child: Stack(
+            children: <Widget>[
+              ClipRRect(
+                borderRadius: borderRadius ?? BorderRadius.circular(0),
+                child: StoryVideo.url(
                   url,
                   controller: controller,
                   requestHeaders: requestHeaders,
                   loadingWidget: loadingWidget,
                   errorWidget: errorWidget,
                 ),
-                SafeArea(
-                  child: Align(
-                    alignment: Alignment.bottomCenter,
-                    child: Container(
-                      width: double.infinity,
-                      margin: EdgeInsets.only(bottom: 24),
-                      padding: EdgeInsets.symmetric(horizontal: 24, vertical: 8),
-                      color: caption != null ? Colors.black54 : Colors.transparent,
-                      child: caption ?? const SizedBox.shrink(),
-                    ),
+              ),
+              SafeArea(
+                child: Align(
+                  alignment: Alignment.bottomCenter,
+                  child: Container(
+                    width: double.infinity,
+                    margin: EdgeInsets.only(bottom: 24),
+                    padding: EdgeInsets.symmetric(
+                        horizontal: 24, vertical: 8),
+                    color: caption != null ? Colors.black54 : Colors
+                        .transparent,
+                    child: caption ?? const SizedBox.shrink(),
                   ),
-                )
-              ],
-            ),
+                ),
+              )
+            ],
           ),
         ),
       ),
@@ -312,16 +314,15 @@ class StoryItem {
   /// Shorthand for creating a story item from an image provider such as `AssetImage`
   /// or `NetworkImage`. However, the story continues to play while the image loads
   /// up.
-  factory StoryItem.pageProviderImage(
-      ImageProvider image, {
-        Key? key,
-        BoxFit imageFit = BoxFit.fitWidth,
-        String? caption,
-        bool shown = false,
-        Duration? duration,
-        EdgeInsetsGeometry? margin,
-        BorderRadiusGeometry? borderRadius,
-      }) {
+  factory StoryItem.pageProviderImage(ImageProvider image, {
+    Key? key,
+    BoxFit imageFit = BoxFit.fitWidth,
+    String? caption,
+    bool shown = false,
+    Duration? duration,
+    EdgeInsetsGeometry? margin,
+    BorderRadiusGeometry? borderRadius,
+  }) {
     return StoryItem(
       Container(
         key: key,
@@ -355,7 +356,8 @@ class StoryItem {
                         horizontal: 24,
                         vertical: 8,
                       ),
-                      color: caption != null ? Colors.black54 : Colors.transparent,
+                      color: caption != null ? Colors.black54 : Colors
+                          .transparent,
                       child: caption != null
                           ? Text(
                         caption,
@@ -384,17 +386,16 @@ class StoryItem {
   /// Shorthand for creating an inline story item from an image provider such as `AssetImage`
   /// or `NetworkImage`. However, the story continues to play while the image loads
   /// up.
-  factory StoryItem.inlineProviderImage(
-      ImageProvider image, {
-        Key? key,
-        Text? caption,
-        bool shown = false,
-        bool roundedTop = true,
-        bool roundedBottom = false,
-        Duration? duration,
-        EdgeInsetsGeometry? margin,
-        BorderRadiusGeometry? borderRadius,
-      }) {
+  factory StoryItem.inlineProviderImage(ImageProvider image, {
+    Key? key,
+    Text? caption,
+    bool shown = false,
+    bool roundedTop = true,
+    bool roundedBottom = false,
+    Duration? duration,
+    EdgeInsetsGeometry? margin,
+    BorderRadiusGeometry? borderRadius,
+  }) {
     return StoryItem(
       Container(
         key: key,
@@ -828,8 +829,7 @@ class PageBar extends StatefulWidget {
   final Color? indicatorForegroundColor;
   final TextDirection? indicatorDirection;
 
-  PageBar(
-      this.pages,
+  PageBar(this.pages,
       this.animation, {
         this.indicatorHeight = IndicatorHeight.large,
         this.indicatorColor,
@@ -910,13 +910,12 @@ class StoryProgressIndicator extends StatelessWidget {
   final Color? indicatorForegroundColor;
   final TextDirection textDirection;
 
-  StoryProgressIndicator(
-      this.value, {
-        this.indicatorHeight = 5,
-        this.indicatorColor,
-        this.indicatorForegroundColor,
-        required this.textDirection,
-      });
+  StoryProgressIndicator(this.value, {
+    this.indicatorHeight = 5,
+    this.indicatorColor,
+    this.indicatorForegroundColor,
+    required this.textDirection,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -947,7 +946,8 @@ class IndicatorOval extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
-    final paint = Paint()..color = this.color;
+    final paint = Paint()
+      ..color = this.color;
     double startX = 0;
     double endX = size.width * widthFactor;
     if (textDirection == TextDirection.rtl) {
