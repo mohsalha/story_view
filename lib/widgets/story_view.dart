@@ -34,10 +34,19 @@ class StoryItem {
 
   /// The page content
   final Widget view;
+
+  /// Margin around the story item
+  final EdgeInsetsGeometry? margin;
+
+  /// Border radius for the story item
+  final BorderRadiusGeometry? borderRadius;
+
   StoryItem(
       this.view, {
         required this.duration,
         this.shown = false,
+        this.margin,
+        this.borderRadius,
       });
 
   /// Short hand to create text-only page.
@@ -58,6 +67,8 @@ class StoryItem {
     bool roundedBottom = false,
     EdgeInsetsGeometry? textOuterPadding,
     Duration? duration,
+    EdgeInsetsGeometry? margin,
+    BorderRadiusGeometry? borderRadius,
   }) {
     double contrast = ContrastHelper.contrast([
       backgroundColor.red,
@@ -72,9 +83,10 @@ class StoryItem {
     return StoryItem(
       Container(
         key: key,
+        margin: margin ?? EdgeInsets.all(8),
         decoration: BoxDecoration(
           color: backgroundColor,
-          borderRadius: BorderRadius.vertical(
+          borderRadius: borderRadius ?? BorderRadius.vertical(
             top: Radius.circular(roundedTop ? 8 : 0),
             bottom: Radius.circular(roundedBottom ? 8 : 0),
           ),
@@ -97,10 +109,11 @@ class StoryItem {
             textAlign: TextAlign.center,
           ),
         ),
-        //color: backgroundColor,
       ),
       shown: shown,
       duration: duration ?? Duration(seconds: 3),
+      margin: margin,
+      borderRadius: borderRadius,
     );
   }
 
@@ -117,51 +130,55 @@ class StoryItem {
     Widget? loadingWidget,
     Widget? errorWidget,
     EdgeInsetsGeometry? captionOuterPadding,
-    BorderRadiusGeometry? borderRadius,
-    EdgeInsetsGeometry? margin,
     Duration? duration,
+    EdgeInsetsGeometry? margin,
+    BorderRadiusGeometry? borderRadius,
   }) {
     return StoryItem(
       Container(
         key: key,
-        margin: margin ?? EdgeInsets.all(0),
+        margin: margin ?? EdgeInsets.all(8),
         decoration: BoxDecoration(
-          color: Colors.black,
-          borderRadius: borderRadius,
+          borderRadius: borderRadius ?? BorderRadius.circular(8),
         ),
-        child: Stack(
-          children: <Widget>[
-            StoryImage.url(
-              url,
-              controller: controller,
-              fit: imageFit,
-              requestHeaders: requestHeaders,
-              loadingWidget: loadingWidget,
-              errorWidget: errorWidget,
-            ),
-            SafeArea(
-              child: Align(
-                alignment: Alignment.bottomCenter,
-                child: Container(
-                  width: double.infinity,
-                  margin: EdgeInsets.only(
-                    bottom: 24,
-                  ),
-                  padding: captionOuterPadding ??
-                      EdgeInsets.symmetric(
-                        horizontal: 24,
-                        vertical: 8,
-                      ),
-                  color: caption != null ? Colors.black54 : Colors.transparent,
-                  child: caption ?? const SizedBox.shrink(),
-                ),
+        child: ClipRRect(
+          borderRadius: borderRadius ?? BorderRadius.circular(8),
+          child: Stack(
+            children: <Widget>[
+              StoryImage.url(
+                url,
+                controller: controller,
+                fit: imageFit,
+                requestHeaders: requestHeaders,
+                loadingWidget: loadingWidget,
+                errorWidget: errorWidget,
               ),
-            )
-          ],
+              SafeArea(
+                child: Align(
+                  alignment: Alignment.bottomCenter,
+                  child: Container(
+                    width: double.infinity,
+                    margin: EdgeInsets.only(
+                      bottom: 24,
+                    ),
+                    padding: captionOuterPadding ??
+                        EdgeInsets.symmetric(
+                          horizontal: 24,
+                          vertical: 8,
+                        ),
+                    color: caption != null ? Colors.black54 : Colors.transparent,
+                    child: caption ?? const SizedBox.shrink(),
+                  ),
+                ),
+              )
+            ],
+          ),
         ),
       ),
       shown: shown,
       duration: duration ?? Duration(seconds: 3),
+      margin: margin,
+      borderRadius: borderRadius,
     );
   }
 
@@ -181,47 +198,54 @@ class StoryItem {
     Widget? errorWidget,
     EdgeInsetsGeometry? captionOuterPadding,
     Duration? duration,
+    EdgeInsetsGeometry? margin,
+    BorderRadiusGeometry? borderRadius,
   }) {
     return StoryItem(
-      ClipRRect(
+      Container(
         key: key,
-        child: Container(
-          color: Colors.grey[100],
+        margin: margin ?? EdgeInsets.all(8),
+        child: ClipRRect(
           child: Container(
-            color: Colors.black,
-            child: Stack(
-              children: <Widget>[
-                StoryImage.url(
-                  url,
-                  controller: controller,
-                  fit: imageFit,
-                  requestHeaders: requestHeaders,
-                  loadingWidget: loadingWidget,
-                  errorWidget: errorWidget,
-                ),
-                Container(
-                  margin: EdgeInsets.only(bottom: 16),
-                  padding: captionOuterPadding ??
-                      EdgeInsets.symmetric(horizontal: 24, vertical: 8),
-                  child: Align(
-                    alignment: Alignment.bottomLeft,
-                    child: Container(
-                      child: caption ?? const SizedBox.shrink(),
-                      width: double.infinity,
+            color: Colors.grey[100],
+            child: Container(
+              color: Colors.black,
+              child: Stack(
+                children: <Widget>[
+                  StoryImage.url(
+                    url,
+                    controller: controller,
+                    fit: imageFit,
+                    requestHeaders: requestHeaders,
+                    loadingWidget: loadingWidget,
+                    errorWidget: errorWidget,
+                  ),
+                  Container(
+                    margin: EdgeInsets.only(bottom: 16),
+                    padding: captionOuterPadding ??
+                        EdgeInsets.symmetric(horizontal: 24, vertical: 8),
+                    child: Align(
+                      alignment: Alignment.bottomLeft,
+                      child: Container(
+                        child: caption ?? const SizedBox.shrink(),
+                        width: double.infinity,
+                      ),
                     ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
-        ),
-        borderRadius: BorderRadius.vertical(
-          top: Radius.circular(roundedTop ? 8 : 0),
-          bottom: Radius.circular(roundedBottom ? 8 : 0),
+          borderRadius: borderRadius ?? BorderRadius.vertical(
+            top: Radius.circular(roundedTop ? 8 : 0),
+            bottom: Radius.circular(roundedBottom ? 8 : 0),
+          ),
         ),
       ),
       shown: shown,
       duration: duration ?? Duration(seconds: 3),
+      margin: margin,
+      borderRadius: borderRadius,
     );
   }
 
@@ -238,38 +262,51 @@ class StoryItem {
         Map<String, dynamic>? requestHeaders,
         Widget? loadingWidget,
         Widget? errorWidget,
+        EdgeInsetsGeometry? margin,
+        BorderRadiusGeometry? borderRadius,
       }) {
     return StoryItem(
-        Container(
-          key: key,
-          color: Colors.black,
-          child: Stack(
-            children: <Widget>[
-              StoryVideo.url(
-                url,
-                controller: controller,
-                requestHeaders: requestHeaders,
-                loadingWidget: loadingWidget,
-                errorWidget: errorWidget,
-              ),
-              SafeArea(
-                child: Align(
-                  alignment: Alignment.bottomCenter,
-                  child: Container(
-                    width: double.infinity,
-                    margin: EdgeInsets.only(bottom: 24),
-                    padding: EdgeInsets.symmetric(horizontal: 24, vertical: 8),
-                    color:
-                    caption != null ? Colors.black54 : Colors.transparent,
-                    child: caption ?? const SizedBox.shrink(),
-                  ),
+      Container(
+        key: key,
+        margin: margin ?? EdgeInsets.all(8),
+        decoration: BoxDecoration(
+          borderRadius: borderRadius ?? BorderRadius.circular(8),
+        ),
+        child: ClipRRect(
+          borderRadius: borderRadius ?? BorderRadius.circular(8),
+          child: Container(
+            color: Colors.black,
+            child: Stack(
+              children: <Widget>[
+                StoryVideo.url(
+                  url,
+                  controller: controller,
+                  requestHeaders: requestHeaders,
+                  loadingWidget: loadingWidget,
+                  errorWidget: errorWidget,
                 ),
-              )
-            ],
+                SafeArea(
+                  child: Align(
+                    alignment: Alignment.bottomCenter,
+                    child: Container(
+                      width: double.infinity,
+                      margin: EdgeInsets.only(bottom: 24),
+                      padding: EdgeInsets.symmetric(horizontal: 24, vertical: 8),
+                      color: caption != null ? Colors.black54 : Colors.transparent,
+                      child: caption ?? const SizedBox.shrink(),
+                    ),
+                  ),
+                )
+              ],
+            ),
           ),
         ),
-        shown: shown,
-        duration: duration ?? Duration(seconds: 10));
+      ),
+      shown: shown,
+      duration: duration ?? Duration(seconds: 10),
+      margin: margin,
+      borderRadius: borderRadius,
+    );
   }
 
   /// Shorthand for creating a story item from an image provider such as `AssetImage`
@@ -282,53 +319,66 @@ class StoryItem {
         String? caption,
         bool shown = false,
         Duration? duration,
+        EdgeInsetsGeometry? margin,
+        BorderRadiusGeometry? borderRadius,
       }) {
     return StoryItem(
-        Container(
-          key: key,
-          color: Colors.black,
-          child: Stack(
-            children: <Widget>[
-              Center(
-                child: Image(
-                  image: image,
-                  height: double.infinity,
-                  width: double.infinity,
-                  fit: imageFit,
-                ),
-              ),
-              SafeArea(
-                child: Align(
-                  alignment: Alignment.bottomCenter,
-                  child: Container(
+      Container(
+        key: key,
+        margin: margin ?? EdgeInsets.all(8),
+        decoration: BoxDecoration(
+          borderRadius: borderRadius ?? BorderRadius.circular(8),
+        ),
+        child: ClipRRect(
+          borderRadius: borderRadius ?? BorderRadius.circular(8),
+          child: Container(
+            color: Colors.black,
+            child: Stack(
+              children: <Widget>[
+                Center(
+                  child: Image(
+                    image: image,
+                    height: double.infinity,
                     width: double.infinity,
-                    margin: EdgeInsets.only(
-                      bottom: 24,
-                    ),
-                    padding: EdgeInsets.symmetric(
-                      horizontal: 24,
-                      vertical: 8,
-                    ),
-                    color:
-                    caption != null ? Colors.black54 : Colors.transparent,
-                    child: caption != null
-                        ? Text(
-                      caption,
-                      style: TextStyle(
-                        fontSize: 15,
-                        color: Colors.white,
-                      ),
-                      textAlign: TextAlign.center,
-                    )
-                        : SizedBox(),
+                    fit: imageFit,
                   ),
                 ),
-              )
-            ],
+                SafeArea(
+                  child: Align(
+                    alignment: Alignment.bottomCenter,
+                    child: Container(
+                      width: double.infinity,
+                      margin: EdgeInsets.only(
+                        bottom: 24,
+                      ),
+                      padding: EdgeInsets.symmetric(
+                        horizontal: 24,
+                        vertical: 8,
+                      ),
+                      color: caption != null ? Colors.black54 : Colors.transparent,
+                      child: caption != null
+                          ? Text(
+                        caption,
+                        style: TextStyle(
+                          fontSize: 15,
+                          color: Colors.white,
+                        ),
+                        textAlign: TextAlign.center,
+                      )
+                          : SizedBox(),
+                    ),
+                  ),
+                )
+              ],
+            ),
           ),
         ),
-        shown: shown,
-        duration: duration ?? Duration(seconds: 3));
+      ),
+      shown: shown,
+      duration: duration ?? Duration(seconds: 3),
+      margin: margin,
+      borderRadius: borderRadius,
+    );
   }
 
   /// Shorthand for creating an inline story item from an image provider such as `AssetImage`
@@ -342,20 +392,24 @@ class StoryItem {
         bool roundedTop = true,
         bool roundedBottom = false,
         Duration? duration,
+        EdgeInsetsGeometry? margin,
+        BorderRadiusGeometry? borderRadius,
       }) {
     return StoryItem(
       Container(
         key: key,
+        margin: margin ?? EdgeInsets.all(8),
         decoration: BoxDecoration(
-            color: Colors.grey[100],
-            borderRadius: BorderRadius.vertical(
-              top: Radius.circular(roundedTop ? 8 : 0),
-              bottom: Radius.circular(roundedBottom ? 8 : 0),
-            ),
-            image: DecorationImage(
-              image: image,
-              fit: BoxFit.cover,
-            )),
+          color: Colors.grey[100],
+          borderRadius: borderRadius ?? BorderRadius.vertical(
+            top: Radius.circular(roundedTop ? 8 : 0),
+            bottom: Radius.circular(roundedBottom ? 8 : 0),
+          ),
+          image: DecorationImage(
+            image: image,
+            fit: BoxFit.cover,
+          ),
+        ),
         child: Container(
           margin: EdgeInsets.only(
             bottom: 16,
@@ -375,6 +429,8 @@ class StoryItem {
       ),
       shown: shown,
       duration: duration ?? Duration(seconds: 3),
+      margin: margin,
+      borderRadius: borderRadius,
     );
   }
 }
